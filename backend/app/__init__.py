@@ -12,7 +12,7 @@ def create_app():
     # Enable CORS
     CORS(app)
 
-    # Register blueprints, if any
+    # Register blueprints
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
 

@@ -15,7 +15,7 @@ This project is a basic hospital management system that includes a backend API b
 1. Create and activate a virtual environment:
 
 \`\`\`sh
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  
 \`\`\`
 
@@ -28,6 +28,7 @@ pip install -r requirements.txt
 3. Run the application:
 
 \`\`\`sh
+python3 app.py
 flask run
 \`\`\`
 
