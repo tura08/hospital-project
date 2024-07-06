@@ -23,27 +23,25 @@ def manage_wards():
             return jsonify({'message': 'Ward added successfully!'}), 201
         return jsonify({'error': 'Invalid data'}), 400
     elif request.method == 'DELETE':
-        ward_name = request.json.get('name')
-        ward = Ward.query.filter_by(name=ward_name).first()
+        ward_id = request.json.get('id')
+        ward = Ward.query.get(ward_id)
         if ward:
             db.session.delete(ward)
             db.session.commit()
             return jsonify({'message': 'Ward deleted successfully!'}), 200
         return jsonify({'error': 'Ward not found'}), 404
 
-@main.route('/operations', methods=['GET', 'POST'])
+@main.route('/operations', methods=['GET', 'POST', 'DELETE'])
 def manage_operations():
     if request.method == 'GET':
         operations = Operation.query.all()
-        return jsonify([
-            {
-                'id': operation.id,
-                'ward_id': operation.ward_id,
-                'patient_name': operation.patient_name,
-                'start_time': operation.start_time.isoformat(),
-                'end_time': operation.end_time.isoformat()
-            } for operation in operations
-        ])
+        return jsonify([{
+            'id': op.id,
+            'ward_id': op.ward_id,
+            'patient_name': op.patient_name,
+            'start_time': op.start_time.isoformat(),
+            'end_time': op.end_time.isoformat()
+        } for op in operations])
     elif request.method == 'POST':
         operation = request.json
         ward_id = operation.get('ward_id')
@@ -57,11 +55,17 @@ def manage_operations():
                         end_time > op.start_time and end_time <= op.end_time):
                     return jsonify({'error': 'Ward is double booked'}), 400
 
-            new_operation = Operation(
-                ward_id=ward_id, patient_name=patient_name,
-                start_time=start_time, end_time=end_time
-            )
+            new_operation = Operation(ward_id=ward_id, patient_name=patient_name,
+                                      start_time=start_time, end_time=end_time)
             db.session.add(new_operation)
             db.session.commit()
             return jsonify({'message': 'Operation scheduled successfully!'}), 201
         return jsonify({'error': 'Invalid data'}), 400
+    elif request.method == 'DELETE':
+        operation_id = request.json.get('id')
+        operation = Operation.query.get(operation_id)
+        if operation:
+            db.session.delete(operation)
+            db.session.commit()
+            return jsonify({'message': 'Operation deleted successfully!'}), 200
+        return jsonify({'error': 'Operation not found'}), 404
