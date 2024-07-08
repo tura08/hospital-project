@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models import Ward, Operation
-from datetime import datetime
+from datetime import datetime, timedelta
 
 main = Blueprint('main', __name__)
 
@@ -26,6 +26,8 @@ def manage_wards():
         ward_id = request.json.get('id')
         ward = Ward.query.get(ward_id)
         if ward:
+            if ward.operations:
+                return jsonify({'error': 'Ward has scheduled operations and cannot be deleted'}), 400
             db.session.delete(ward)
             db.session.commit()
             return jsonify({'message': 'Ward deleted successfully!'}), 200
@@ -38,6 +40,7 @@ def manage_operations():
         return jsonify([{
             'id': op.id,
             'ward_id': op.ward_id,
+            'ward_name': op.ward.name, 
             'patient_name': op.patient_name,
             'start_time': op.start_time.isoformat(),
             'end_time': op.end_time.isoformat()
@@ -48,6 +51,10 @@ def manage_operations():
         patient_name = operation.get('patient_name')
         start_time = datetime.fromisoformat(operation.get('start_time'))
         end_time = datetime.fromisoformat(operation.get('end_time'))
+
+        # Check if the duration is at least 30 minutes
+        if end_time - start_time < timedelta(minutes=30):
+            return jsonify({'error': 'Operation duration must be at least 30 minutes'}), 400
 
         if ward_id and patient_name and start_time and end_time:
             for op in Operation.query.filter_by(ward_id=ward_id).all():
