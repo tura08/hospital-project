@@ -1,0 +1,10 @@
+<div class="list-container">
+  <h2>Wards List</h2>
+  <div *ngIf="errorMessage" class="alert">{{ errorMessage }}</div>
+  <ul>
+    <li *ngFor="let ward of wards">
+      {{ ward.name }}
+      <button (click)="deleteWard(ward.id)" class="btn-delete">Delete</button>
+    </li>
+  </ul>
+</div>

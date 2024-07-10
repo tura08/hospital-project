@@ -1,0 +1,15 @@
+<div class="container">
+  <h2>{{ title }}</h2>
+  <div class="grid-container">
+    <div class="wards-container">
+      <app-ward-form (wardAdded)="onWardAdded()"></app-ward-form>
+      <app-ward-list #wardList></app-ward-list>
+    </div>
+    <div class="operations-container">
+      <app-operation-form
+        (operationScheduled)="onOperationScheduled()"
+      ></app-operation-form>
+      <app-operation-list #operationList></app-operation-list>
+    </div>
+  </div>
+</div>

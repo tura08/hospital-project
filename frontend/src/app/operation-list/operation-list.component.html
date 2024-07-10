@@ -1,0 +1,22 @@
+<div class="list-container">
+  <h2>Operations</h2>
+  <ul>
+    <li *ngFor="let operation of operations" class="operation-item">
+      <div class="operation-details">
+        <div class="left-column">
+          Patient: {{ operation.patient_name }}<br />
+          Ward: {{ operation.ward_name }}
+        </div>
+        <div class="right-column">
+          Start: {{ operation.start_time | date : "yyyy-MM-dd" }}
+          {{ operation.start_time | date : "shortTime" }}<br />
+          Finish: {{ operation.end_time | date : "yyyy-MM-dd" }}
+          {{ operation.end_time | date : "shortTime" }}<br />
+        </div>
+      </div>
+      <button (click)="deleteOperation(operation.id)" class="btn-delete">
+        Delete
+      </button>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,24 @@
+.list-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.operation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.operation-details {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.left-column,
+.right-column {
+  flex: 1;
+}

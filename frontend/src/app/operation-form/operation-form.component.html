@@ -1,0 +1,51 @@
+<div class="form-container">
+  <h2>Schedule Operation</h2>
+  <form (ngSubmit)="scheduleOperation()">
+    <div *ngIf="alertMessage" class="alert">
+      {{ alertMessage }}
+    </div>
+    <div class="form-operations-row">
+      <div class="form-operations-element">
+        <label for="ward">Ward:</label>
+        <select id="ward" [(ngModel)]="wardId" name="wardId" required>
+          <option *ngFor="let ward of wards" [value]="ward.id">
+            {{ ward.name }}
+          </option>
+        </select>
+      </div>
+      <div class="form-operations-element">
+        <label for="patientName">Patient Name:</label>
+        <input
+          type="text"
+          id="patientName"
+          [(ngModel)]="patientName"
+          name="patientName"
+          required
+        />
+      </div>
+    </div>
+    <div class="form-operations-row">
+      <div class="form-operations-element">
+        <label for="startTime">Start Time:</label>
+        <input
+          type="datetime-local"
+          id="startTime"
+          [(ngModel)]="startTime"
+          name="startTime"
+          required
+        />
+      </div>
+      <div class="form-operations-element">
+        <label for="endTime">End Time:</label>
+        <input
+          type="datetime-local"
+          id="endTime"
+          [(ngModel)]="endTime"
+          name="endTime"
+          required
+        />
+      </div>
+    </div>
+    <button type="submit">Schedule Operation</button>
+  </form>
+</div>
