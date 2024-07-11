@@ -2,7 +2,10 @@
   <h2>Operations</h2>
   <ul>
     <li *ngFor="let operation of operations" class="operation-item">
-      <div class="operation-details">
+      <div
+        class="operation-details"
+        *ngIf="editingOperation?.id !== operation.id"
+      >
         <div class="left-column">
           Patient: {{ operation.patient_name }}<br />
           Ward: {{ operation.ward_name }}
@@ -13,10 +16,10 @@
           Finish: {{ operation.end_time | date : "yyyy-MM-dd" }}
           {{ operation.end_time | date : "shortTime" }}<br />
         </div>
+        <button (click)="deleteOperation(operation.id)" class="btn-delete">
+          Delete
+        </button>
       </div>
-      <button (click)="deleteOperation(operation.id)" class="btn-delete">
-        Delete
-      </button>
     </li>
   </ul>
 </div>

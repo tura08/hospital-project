@@ -4,6 +4,7 @@
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 .list-container ul {
   list-style: none;
   padding: 0;
@@ -19,4 +20,23 @@
 
 .list-container li:last-child {
   border-bottom: none;
+}
+
+.list-container .editable {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.list-container .editable span {
+  margin-right: 8px;
+}
+
+.list-container .editable .edit-icon {
+  font-size: 16px;
+  color: #28a745;
+}
+
+.list-container .editable .edit-icon:hover {
+  color: #218838;
 }

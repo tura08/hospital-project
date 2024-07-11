@@ -9,7 +9,7 @@ main = Blueprint('main', __name__)
 def health_check():
     return jsonify({'status': 'UP'})
 
-@main.route('/wards', methods=['GET', 'POST', 'DELETE'])
+@main.route('/wards', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def manage_wards():
     if request.method == 'GET':
         wards = Ward.query.all()
@@ -32,8 +32,17 @@ def manage_wards():
             db.session.commit()
             return jsonify({'message': 'Ward deleted successfully!'}), 200
         return jsonify({'error': 'Ward not found'}), 404
+    elif request.method == 'PUT':
+        ward_id = request.json.get('id')
+        ward_name = request.json.get('name')
+        ward = Ward.query.get(ward_id)
+        if ward and ward_name:
+            ward.name = ward_name
+            db.session.commit()
+            return jsonify({'message':'Ward updated successfully!'}), 200
+        return jsonify({'error': 'Invalid data or Ward not found'}), 400
 
-@main.route('/operations', methods=['GET', 'POST', 'DELETE'])
+@main.route('/operations', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def manage_operations():
     if request.method == 'GET':
         operations = Operation.query.all()
@@ -76,3 +85,31 @@ def manage_operations():
             db.session.commit()
             return jsonify({'message': 'Operation deleted successfully!'}), 200
         return jsonify({'error': 'Operation not found'}), 404
+    elif request.method == 'PUT':
+        operation_id = request.json.get('id')
+        ward_id = request.json.get('ward_id')
+        patient_name = request.json.get('patient_name')
+        start_time = datetime.fromisoformat(request.json.get('start_time'))
+        end_time = datetime.fromisoformat(request.json.get('end_time'))
+
+        operation = Operation.query.get(operation_id)
+        
+        # Check if the duration is at least 30 minutes
+        if end_time - start_time < timedelta(minutes=30):
+            return jsonify({'error': 'Operation duration must be at least 30 minutes'}), 400
+
+        if operation and ward_id and patient_name and start_time and end_time:
+            for op in Operation.query.filter_by(ward_id=ward_id).all():
+                if op.id != operation_id and (
+                        (start_time >= op.start_time and start_time < op.end_time) or (
+                        end_time > op.start_time and end_time <= op.end_time)):
+                    return jsonify({'error': 'Ward is double booked'}), 400
+
+            operation.ward_id = ward_id
+            operation.patient_name = patient_name
+            operation.start_time = start_time
+            operation.end_time = end_time
+
+            db.session.commit()
+            return jsonify({'message': 'Operation updated successfully!'}), 200
+        return jsonify({'error': 'Invalid data or Operation not found'}), 400

@@ -4,6 +4,7 @@
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 .operation-item {
   display: flex;
   justify-content: space-between;
@@ -12,7 +13,8 @@
   border-bottom: 1px solid #ccc;
 }
 
-.operation-details {
+.operation-details,
+.operation-details-edit {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -21,4 +23,24 @@
 .left-column,
 .right-column {
   flex: 1;
+}
+
+.form-operations-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.form-operations-element {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.form-operations-element:last-child {
+  margin-right: 0;
+}
+.btn-align {
+  display: flex;
+  flex-direction: column;
 }

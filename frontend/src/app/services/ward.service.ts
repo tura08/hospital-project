@@ -21,6 +21,10 @@ export class WardService {
     return this.http.post<any>(this.apiUrl, { name: wardName });
   }
 
+  updateWard(ward: any): Observable<any> {
+    return this.http.put<any>(this.apiUrl, ward);
+  }
+
   deleteWard(id: number): Observable<any> {
     return this.http.request<any>('delete', this.apiUrl, { body: { id } });
   }
@@ -31,6 +35,7 @@ export class WardService {
       (error) => console.error('Error loading wards', error)
     );
   }
+
   refreshWards() {
     this.loadWards();
   }

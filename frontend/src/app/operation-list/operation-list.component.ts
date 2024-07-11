@@ -11,6 +11,7 @@ import { OperationFormComponent } from '../operation-form/operation-form.compone
 })
 export class OperationListComponent implements OnInit {
   operations: any[] = [];
+  editingOperation: any | null = null;
 
   @ViewChild(OperationFormComponent) operationForm!: OperationFormComponent;
 
@@ -46,15 +47,25 @@ export class OperationListComponent implements OnInit {
       }
     );
   }
+  editOperation(operation: any): void {
+    this.editingOperation = { ...operation };
+  }
 
-  updateOperation(operation: any): void {
-    this.operationService.updateOperation(operation).subscribe(
-      () => {
-        this.loadOperations();
-      },
-      (error) => {
-        console.error('Error updating operation', error);
-      }
-    );
+  saveOperation(): void {
+    if (this.editingOperation) {
+      this.operationService.updateOperation(this.editingOperation).subscribe(
+        () => {
+          this.loadOperations();
+          this.editingOperation = null;
+        },
+        (error) => {
+          console.error('Error updating operation', error);
+        }
+      );
+    }
+  }
+
+  cancelEdit(): void {
+    this.editingOperation = null;
   }
 }

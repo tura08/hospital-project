@@ -1,5 +1,8 @@
 <div class="form-container">
-  <h2>Add Ward</h2>
-  <input [(ngModel)]="wardName" placeholder="Ward Name" />
-  <button (click)="addWard()">Add Ward</button>
+  <h2>{{ mode === "add" ? "Add Ward" : "Edit Ward" }}</h2>
+  <input [(ngModel)]="wardName" placeholder="Ward Name" name="wardName" />
+  <button (click)="saveWard()">
+    {{ mode === "add" ? "Add Ward" : "Update Ward" }}
+  </button>
+  <button *ngIf="mode === 'edit'" (click)="clearForm()">Cancel</button>
 </div>

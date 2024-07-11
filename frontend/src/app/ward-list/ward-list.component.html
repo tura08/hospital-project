@@ -3,8 +3,25 @@
   <div *ngIf="errorMessage" class="alert">{{ errorMessage }}</div>
   <ul>
     <li *ngFor="let ward of wards">
-      {{ ward.name }}
-      <button (click)="deleteWard(ward.id)" class="btn-delete">Delete</button>
+      <div
+        class="editable"
+        *ngIf="!ward.editMode"
+        (click)="enableEditMode(ward)"
+      >
+        <span>{{ ward.name }}</span>
+        <i class="fas fa-pen edit-icon"></i>
+      </div>
+      <input
+        *ngIf="ward.editMode"
+        [(ngModel)]="ward.name"
+        (blur)="handleBlur(ward)"
+      />
+      <button
+        (click)="deleteWard(ward.id); $event.stopPropagation()"
+        class="btn-delete"
+      >
+        Delete
+      </button>
     </li>
   </ul>
 </div>

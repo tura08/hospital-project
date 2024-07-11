@@ -19,7 +19,7 @@ export class WardListComponent implements OnInit {
   loadWards(): void {
     this.wardService.getWards().subscribe(
       (data) => {
-        this.wards = data;
+        this.wards = data.map((ward) => ({ ...ward, editMode: false }));
       },
       (error) => {
         console.error('Error fetching wards', error);
@@ -31,7 +31,6 @@ export class WardListComponent implements OnInit {
     this.wardService.deleteWard(id).subscribe(
       () => {
         this.wards = this.wards.filter((ward) => ward.id !== id);
-        this.wardService.refreshWards();
         this.errorMessage = '';
       },
       (error) => {
@@ -47,5 +46,29 @@ export class WardListComponent implements OnInit {
         }
       }
     );
+  }
+
+  enableEditMode(ward: any): void {
+    ward.editMode = true;
+  }
+
+  updateWard(ward: any): void {
+    if (ward.name.trim() === '') {
+      this.errorMessage = 'Ward name cannot be empty';
+      return;
+    }
+    this.wardService.updateWard({ id: ward.id, name: ward.name }).subscribe(
+      () => {
+        ward.editMode = false;
+        this.errorMessage = '';
+      },
+      (error) => {
+        console.error('Error updating ward', error);
+      }
+    );
+  }
+
+  handleBlur(ward: any): void {
+    this.updateWard(ward);
   }
 }
