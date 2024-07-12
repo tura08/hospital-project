@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { WardService } from '../services/ward.service';
 
 @Component({
@@ -9,6 +9,8 @@ import { WardService } from '../services/ward.service';
 export class WardListComponent implements OnInit {
   wards: any[] = [];
   errorMessage: string = '';
+
+  @Output() wardModified = new EventEmitter<void>();
 
   constructor(private wardService: WardService) {}
 
@@ -32,24 +34,16 @@ export class WardListComponent implements OnInit {
       () => {
         this.wards = this.wards.filter((ward) => ward.id !== id);
         this.errorMessage = '';
+        this.wardModified.emit();
       },
       (error) => {
-        if (
-          error.status === 400 &&
-          error.error.error ===
-            'Ward has scheduled operations and cannot be deleted'
-        ) {
-          this.errorMessage =
-            'Cannot delete ward: there are still operations scheduled.';
+        if (error.status === 400 && error.error.error) {
+          this.errorMessage = error.error.error;
         } else {
           console.error('Error deleting ward', error);
         }
       }
     );
-  }
-
-  enableEditMode(ward: any): void {
-    ward.editMode = true;
   }
 
   updateWard(ward: any): void {
@@ -61,14 +55,15 @@ export class WardListComponent implements OnInit {
       () => {
         ward.editMode = false;
         this.errorMessage = '';
+        this.wardModified.emit();
       },
       (error) => {
-        console.error('Error updating ward', error);
+        if (error.status === 400 && error.error.error) {
+          this.errorMessage = error.error.error;
+        } else {
+          console.error('Error updating ward', error);
+        }
       }
     );
-  }
-
-  handleBlur(ward: any): void {
-    this.updateWard(ward);
   }
 }

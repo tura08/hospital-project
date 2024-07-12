@@ -47,25 +47,4 @@ export class OperationListComponent implements OnInit {
       }
     );
   }
-  editOperation(operation: any): void {
-    this.editingOperation = { ...operation };
-  }
-
-  saveOperation(): void {
-    if (this.editingOperation) {
-      this.operationService.updateOperation(this.editingOperation).subscribe(
-        () => {
-          this.loadOperations();
-          this.editingOperation = null;
-        },
-        (error) => {
-          console.error('Error updating operation', error);
-        }
-      );
-    }
-  }
-
-  cancelEdit(): void {
-    this.editingOperation = null;
-  }
 }

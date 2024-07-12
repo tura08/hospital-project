@@ -1,4 +1,4 @@
-# Hospital Management System
+# Hospital Booking System
 
 This project is a basic hospital management system that includes a backend API built with Flask and SQLAlchemy, and a frontend built with Angular.
 

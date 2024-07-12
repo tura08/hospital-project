@@ -6,16 +6,14 @@
       <div
         class="editable"
         *ngIf="!ward.editMode"
-        (click)="enableEditMode(ward)"
+        (click)="ward.editMode = true"
       >
         <span>{{ ward.name }}</span>
         <i class="fas fa-pen edit-icon"></i>
       </div>
-      <input
-        *ngIf="ward.editMode"
-        [(ngModel)]="ward.name"
-        (blur)="handleBlur(ward)"
-      />
+      <div *ngIf="ward.editMode">
+        <input [(ngModel)]="ward.name" (blur)="updateWard(ward)" />
+      </div>
       <button
         (click)="deleteWard(ward.id); $event.stopPropagation()"
         class="btn-delete"

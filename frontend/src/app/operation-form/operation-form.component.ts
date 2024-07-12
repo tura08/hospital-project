@@ -40,7 +40,7 @@ export class OperationFormComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.wardService.loadWards(); // Load initial wards
+    this.wardService.loadWards();
   }
 
   ngOnDestroy() {

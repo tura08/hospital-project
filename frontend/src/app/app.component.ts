@@ -8,8 +8,6 @@ import { WardListComponent } from './ward-list/ward-list.component';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Hospital Booking System';
-
   @ViewChild(OperationListComponent) operationList!: OperationListComponent;
   @ViewChild(WardListComponent) wardList!: WardListComponent;
 
