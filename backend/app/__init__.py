@@ -10,7 +10,7 @@ def create_app():
     db.init_app(app)
 
     # Enable CORS
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
 
     # Register blueprints
     from .routes import main as main_blueprint

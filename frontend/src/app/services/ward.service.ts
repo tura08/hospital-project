@@ -9,7 +9,7 @@ export class WardService {
   private wardsSubject = new Subject<any[]>();
   wards$ = this.wardsSubject.asObservable();
 
-  private apiUrl = 'http://127.0.0.1:5000/wards';
+  private apiUrl = 'http://127.0.0.1:5050/wards';
 
   constructor(private http: HttpClient) {}
 

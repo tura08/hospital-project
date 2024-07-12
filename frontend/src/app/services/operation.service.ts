@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class OperationService {
-  private apiUrl = 'http://127.0.0.1:5000/operations';
+  private apiUrl = 'http://127.0.0.1:5050/operations';
 
   constructor(private http: HttpClient) {}
 

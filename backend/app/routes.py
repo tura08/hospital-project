@@ -42,7 +42,7 @@ def manage_wards():
             return jsonify({'message':'Ward updated successfully!'}), 200
         return jsonify({'error': 'Invalid data or Ward not found'}), 400
 
-@main.route('/operations', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@main.route('/operations', methods=['GET', 'POST', 'DELETE'])
 def manage_operations():
     if request.method == 'GET':
         operations = Operation.query.all()
@@ -61,21 +61,44 @@ def manage_operations():
         start_time = datetime.fromisoformat(operation.get('start_time'))
         end_time = datetime.fromisoformat(operation.get('end_time'))
 
-        # Check if the duration is at least 30 minutes
+        # Checks for booking operations
+        if end_time - start_time > timedelta(hours=12):
+            return jsonify({'error': 'Operation cannot exceed 12 hours'}), 400
+        if start_time < datetime.now() + timedelta(hours=12):
+            return jsonify({'error': "Operation must be booked at least 12 hours in advance"}), 400
+        if start_time < datetime.now():
+            return jsonify({'error': "Operation cannot be scheduled in the past"}), 400
         if end_time - start_time < timedelta(minutes=30):
             return jsonify({'error': 'Operation duration must be at least 30 minutes'}), 400
 
-        if ward_id and patient_name and start_time and end_time:
-            for op in Operation.query.filter_by(ward_id=ward_id).all():
-                if (start_time >= op.start_time and start_time < op.end_time) or (
-                        end_time > op.start_time and end_time <= op.end_time):
-                    return jsonify({'error': 'Ward is double booked'}), 400
+        # Calculate the total scheduled time for the ward on the given day
+        start_of_day = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
 
-            new_operation = Operation(ward_id=ward_id, patient_name=patient_name,
-                                      start_time=start_time, end_time=end_time)
+        total_scheduled_time = db.session.query(db.func.sum(Operation.end_time - Operation.start_time)).filter(
+            Operation.ward_id == ward_id,
+            Operation.start_time >= start_of_day,
+            Operation.end_time <= end_of_day
+        ).scalar() or timedelta()
+
+        # Check if adding the new operation exceeds 12 hours
+        if total_scheduled_time + (end_time - start_time) > timedelta(hours=12):
+            return jsonify({'error': 'Total scheduled operation time for the ward exceeds 12 hours in a day'}), 400
+
+        if ward_id and patient_name and start_time and end_time:
+            overlap_query = db.session.query(Operation).filter(
+                Operation.ward_id == ward_id,
+                Operation.start_time < end_time,
+                Operation.end_time > start_time
+            ).exists()
+            overlap_exists = db.session.query(overlap_query).scalar()
+            if overlap_exists:
+                return jsonify({'error': 'Ward is double booked'}), 400
+
+            new_operation = Operation(ward_id=ward_id, patient_name=patient_name, start_time=start_time, end_time=end_time)
             db.session.add(new_operation)
             db.session.commit()
-            return jsonify({'message': 'Operation scheduled successfully!'}), 201
+            return jsonify({'message': "Operation scheduled successfully."}), 201
         return jsonify({'error': 'Invalid data'}), 400
     elif request.method == 'DELETE':
         operation_id = request.json.get('id')
@@ -85,31 +108,3 @@ def manage_operations():
             db.session.commit()
             return jsonify({'message': 'Operation deleted successfully!'}), 200
         return jsonify({'error': 'Operation not found'}), 404
-    elif request.method == 'PUT':
-        operation_id = request.json.get('id')
-        ward_id = request.json.get('ward_id')
-        patient_name = request.json.get('patient_name')
-        start_time = datetime.fromisoformat(request.json.get('start_time'))
-        end_time = datetime.fromisoformat(request.json.get('end_time'))
-
-        operation = Operation.query.get(operation_id)
-        
-        # Check if the duration is at least 30 minutes
-        if end_time - start_time < timedelta(minutes=30):
-            return jsonify({'error': 'Operation duration must be at least 30 minutes'}), 400
-
-        if operation and ward_id and patient_name and start_time and end_time:
-            for op in Operation.query.filter_by(ward_id=ward_id).all():
-                if op.id != operation_id and (
-                        (start_time >= op.start_time and start_time < op.end_time) or (
-                        end_time > op.start_time and end_time <= op.end_time)):
-                    return jsonify({'error': 'Ward is double booked'}), 400
-
-            operation.ward_id = ward_id
-            operation.patient_name = patient_name
-            operation.start_time = start_time
-            operation.end_time = end_time
-
-            db.session.commit()
-            return jsonify({'message': 'Operation updated successfully!'}), 200
-        return jsonify({'error': 'Invalid data or Operation not found'}), 400

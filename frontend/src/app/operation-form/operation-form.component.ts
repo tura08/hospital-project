@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './operation-form.component.html',
   styleUrls: ['./operation-form.component.css'],
 })
-export class OperationFormComponent implements OnInit {
+export class OperationFormComponent implements OnInit, OnDestroy {
   @Output() operationScheduled = new EventEmitter<void>();
 
   wardId: number = 0;
@@ -42,6 +42,7 @@ export class OperationFormComponent implements OnInit {
 
     this.wardService.loadWards(); // Load initial wards
   }
+
   ngOnDestroy() {
     if (this.wardsSubscription) {
       this.wardsSubscription.unsubscribe();
@@ -65,20 +66,10 @@ export class OperationFormComponent implements OnInit {
       },
       (error) => {
         if (error.status === 400) {
-          if (error.error.error === 'Ward is double booked') {
-            this.alertMessage =
-              'The selected ward is already booked for the chosen time. Please select a different time.';
-          } else if (
-            error.error.error ===
-            'Operation duration must be at least 30 minutes'
-          ) {
-            this.alertMessage =
-              'Operation duration must be at least 30 minutes.';
-          } else {
-            this.alertMessage = 'Error scheduling operation';
-          }
+          this.alertMessage = error.error.error;
         } else {
           console.error('Error scheduling operation', error);
+          this.alertMessage = 'Unexpected error occurred. Please try again.';
         }
       }
     );
